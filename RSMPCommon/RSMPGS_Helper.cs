@@ -12,6 +12,8 @@ using System.Net;
 using System.Threading;
 using System.Linq;
 using System.Collections;
+using IniParser;
+using IniParser.Model;
 
 namespace nsRSMPGS
 {
@@ -163,39 +165,6 @@ namespace nsRSMPGS
 
 	public class cPrivateProfile
 	{
-
-		[DllImport("KERNEL32.DLL", EntryPoint = "GetPrivateProfileStringW",
-			SetLastError = true,
-			CharSet = CharSet.Unicode, ExactSpelling = true,
-			CallingConvention = CallingConvention.StdCall)]
-		private static extern int GetPrivateProfileString(
-		string lpAppName,
-		string lpKeyName,
-		string lpDefault,
-		string lpReturnString,
-		int nSize,
-		string lpFilename);
-
-		[DllImport("KERNEL32.DLL", EntryPoint = "GetPrivateProfileIntW",
-			SetLastError = true,
-			CharSet = CharSet.Unicode, ExactSpelling = true,
-			CallingConvention = CallingConvention.StdCall)]
-		private static extern int GetPrivateProfileInt(
-		string lpAppName,
-		string lpKeyName,
-		int iDefault,
-		string lpFilename);
-
-		[DllImport("KERNEL32.DLL", EntryPoint = "WritePrivateProfileStringW",
-			SetLastError = true,
-			CharSet = CharSet.Unicode, ExactSpelling = true,
-			CallingConvention = CallingConvention.StdCall)]
-		private static extern int WritePrivateProfileString(
-		string lpAppName,
-		string lpKeyName,
-		string lpString,
-		string lpFilename);
-
 		public static string ApplicationPath()
 		{
 
@@ -259,9 +228,11 @@ namespace nsRSMPGS
 
 		public static string GetIniFileString(string iniFile, string category, string key, string defaultValue)
 		{
-			string returnString = new string(' ', 1024);
-			GetPrivateProfileString(category, key, defaultValue, returnString, 1024, iniFile);
-			return returnString.Split('\0')[0];
+			var parser = new FileIniDataParser ();
+			IniData data = parser.ReadFile (RSMPGS.IniFileFullname);
+			if (data [category] [key] == null)
+				return defaultValue; 
+			return data [category] [key];
 		}
 
 		public static int GetIniFileInt(string category, string key, int defaultValue)
@@ -271,7 +242,12 @@ namespace nsRSMPGS
 
 		public static int GetIniFileInt(string iniFile, string category, string key, int defaultValue)
 		{
-			return GetPrivateProfileInt(category, key, defaultValue, iniFile);
+			var parser = new FileIniDataParser ();
+			IniData data = parser.ReadFile (RSMPGS.IniFileFullname);
+			string sData = data [category] [key];
+			if (sData == null)
+				return defaultValue;
+			return int.Parse (sData);
 		}
 
 		public static void WriteIniFileString(string category, string key, string value)
@@ -281,7 +257,10 @@ namespace nsRSMPGS
 
 		public static void WriteIniFileString(string iniFile, string category, string key, string value)
 		{
-			WritePrivateProfileString(category, key, value, iniFile);
+			var parser = new FileIniDataParser ();
+			IniData data = parser.ReadFile (RSMPGS.IniFileFullname);
+			data [category] [key] = value;
+			parser.WriteFile (RSMPGS.IniFileFullname, data);
 		}
 
 		public static void WriteIniFileInt(string category, string key, int value)
@@ -291,35 +270,10 @@ namespace nsRSMPGS
 
 		public static void WriteIniFileInt(string iniFile, string category, string key, int value)
 		{
-			WritePrivateProfileString(category, key, value.ToString(), iniFile);
-		}
-
-		public static List<string> GetCategories()
-		{
-			return GetCategories(RSMPGS.IniFileFullname);
-		}
-
-		public static List<string> GetCategories(string iniFile)
-		{
-			string returnString = new string(' ', 65536);
-			GetPrivateProfileString(null, null, null, returnString, 65536, iniFile);
-			List<string> result = new List<string>(returnString.Split('\0'));
-			result.RemoveRange(result.Count - 2, 2);
-			return result;
-		}
-
-		public static List<string> GetKeys(string category)
-		{
-			return GetKeys(RSMPGS.IniFileFullname, category);
-		}
-
-		public static List<string> GetKeys(string iniFile, string category)
-		{
-			string returnString = new string(' ', 32768);
-			GetPrivateProfileString(category, null, null, returnString, 32768, iniFile);
-			List<string> result = new List<string>(returnString.Split('\0'));
-			result.RemoveRange(result.Count - 2, 2);
-			return result;
+			var parser = new FileIniDataParser ();
+			IniData data = parser.ReadFile (RSMPGS.IniFileFullname);
+			data [category] [key] = value.ToString ();
+			parser.WriteFile (RSMPGS.IniFileFullname, data);
 		}
 
     public static string Base64Encode(string plainText)
