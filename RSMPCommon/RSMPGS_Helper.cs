@@ -202,7 +202,7 @@ namespace nsRSMPGS
 			if (RSMPGS.SpecifiedPath.Length == 0)
 			{
 #if DEBUG
-				return "..\\..";
+				return Path.Combine("..", "..");
 #else
                 string AssemblyName = System.Reflection.Assembly.GetExecutingAssembly().Location;
                 System.IO.FileInfo file = new System.IO.FileInfo(AssemblyName);
@@ -219,37 +219,37 @@ namespace nsRSMPGS
 
 		public static string SettingsPath()
 		{
-			return ApplicationPath() + "\\Settings";
+			return Path.Combine(ApplicationPath(), "Settings");
 		}
 
 		public static string ObjectFilesPath()
 		{
-			return ApplicationPath() + "\\Objects";
+			return Path.Combine(ApplicationPath(), "Objects");
 		}
 
 		public static string LogFilesPath()
 		{
-			return ApplicationPath() + "\\LogFiles";
+			return Path.Combine(ApplicationPath(), "LogFiles");
 		}
 
 		public static string SysLogFilesPath()
 		{
-			return LogFilesPath() + "\\SysLogFiles";
+			return Path.Combine(LogFilesPath(), "SysLogFiles");
 		}
 
 		public static string DebugFilesPath()
 		{
-			return LogFilesPath() + "\\DebugFiles";
+			return Path.Combine(LogFilesPath(), "DebugFiles");
 		}
 
 		public static string EventFilesPath()
 		{
-			return LogFilesPath() + "\\EventFiles";
+			return Path.Combine(LogFilesPath(), "EventFiles");
 		}
 
 		public static string ProcessImageFileFullName()
 		{
-			return cPrivateProfile.ObjectFilesPath() + "\\" + "ProcessImage.dat";
+			return Path.Combine(cPrivateProfile.ObjectFilesPath(), "ProcessImage.dat");
 		}
 
 		public static string GetIniFileString(string category, string key, string defaultValue)
@@ -1330,7 +1330,7 @@ namespace nsRSMPGS
 
 			string sDateTime = String.Format("{0:HH:mm:ss.fff}", DateTime.Now);
 
-			string sFileName = sSysLogFilePath + "\\SysLog_" + String.Format("{0:yyyyMMdd}", DateTime.Now) + ".Log";
+			string sFileName = Path.Combine(sSysLogFilePath, "SysLog_") + String.Format("{0:yyyyMMdd}", DateTime.Now) + ".Log";
 
 			RSMPGS.MainForm.BeginInvoke(RSMPGS.MainForm.DelegateAddSysLogListItem, new Object[] { severity, sDateTime, sLogText });
 
@@ -1365,7 +1365,7 @@ namespace nsRSMPGS
 			if (sLogText.ToLower().Contains("aggregatedstatus")) sEventType = "AggregatedStatus";
 
 			sLogText = sLogText.Replace(sEventType + ";", "");
-			string sFileName = sEventFilePath + "\\" + sEventType + "Event_" + String.Format("{0:yyyyMMdd}", DateTime.Now) + ".txt";
+			string sFileName = Path.Combine(sEventFilePath, sEventType) + "Event_" + String.Format("{0:yyyyMMdd}", DateTime.Now) + ".txt";
 
 			lock (this)
 			{
@@ -1417,7 +1417,7 @@ namespace nsRSMPGS
 			try
 			{
 				Random Rnd = new Random();
-				string sFileName = cPrivateProfile.DebugFilesPath() + "\\Base64_" + String.Format("{0:yyyyMMdd}_{0:HHmmss_fff}", DateTime.Now) + "_" + Rnd.Next(4095).ToString("x3") + ".Bin";
+				string sFileName = Path.Combine(cPrivateProfile.DebugFilesPath(), "Base64_") + String.Format("{0:yyyyMMdd}_{0:HHmmss_fff}", DateTime.Now) + "_" + Rnd.Next(4095).ToString("x3") + ".Bin";
 				Encoding encoding;
 				encoding = Encoding.GetEncoding("IBM437");
 				byte[] Base64Bytes = encoding.GetBytes(sValue);

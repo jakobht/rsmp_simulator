@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -122,7 +123,7 @@ namespace nsRSMPGS
       }
 
 			// Must be initialized after Argument parsing...
-			IniFileFullname = cPrivateProfile.SettingsPath() + "\\" + "RSMPGS1.ini";
+			IniFileFullname = Path.Combine(cPrivateProfile.SettingsPath(), "RSMPGS1.INI");
 
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
