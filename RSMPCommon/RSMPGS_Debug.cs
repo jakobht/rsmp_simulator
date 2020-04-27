@@ -266,6 +266,7 @@ namespace nsRSMPGS
 			}
 
 			listView_Debug.BeginUpdate();
+			listView_Debug.StopSorting();
 
 			sSubItems[0] = String.Format("{0:yyyy-MM-dd}", dtNow) + " " + String.Format("{0:HH:mm:ss.fff}", dtNow);
 
