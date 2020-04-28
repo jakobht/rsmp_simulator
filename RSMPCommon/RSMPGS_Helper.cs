@@ -182,23 +182,51 @@ namespace nsRSMPGS
 			{
 				return RSMPGS.SpecifiedPath;
 			}
-
-
 		}
 
-		public static string SettingsPath()
+        public static string ConfigPath()
+        {
+#if DEBUG
+            return Path.Combine("..", "..");
+#else
+                string cPath;
+                if (Environment.OSVersion.Platform == PlatformID.Unix || 
+                    Environment.OSVersion.Platform == PlatformID.MacOSX)
+                {
+                    cPath = Path.Combine(Environment.GetEnvironmentVariable("HOME"), ".config");
+                }
+                else
+                {
+                    // My Documents
+                    cPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                }
+
+#if _RSMPGS1
+                cPath = Path.Combine(cPath, "RSMPGS1");
+#endif
+
+#if _RSMPGS2
+                cPath = Path.Combine(cPath, "RSMPGS2");
+#endif
+
+            System.IO.FileInfo file = new System.IO.FileInfo(cPath);
+            return file.FullName;
+#endif
+        }
+
+        public static string SettingsPath()
 		{
-			return Path.Combine(ApplicationPath(), "Settings");
+			return Path.Combine(ConfigPath(), "Settings");
 		}
 
 		public static string ObjectFilesPath()
 		{
-			return Path.Combine(ApplicationPath(), "Objects");
+			return Path.Combine(ConfigPath(), "Objects");
 		}
 
 		public static string LogFilesPath()
 		{
-			return Path.Combine(ApplicationPath(), "LogFiles");
+			return Path.Combine(ConfigPath(), "LogFiles");
 		}
 
 		public static string SysLogFilesPath()
