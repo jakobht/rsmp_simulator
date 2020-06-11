@@ -8,13 +8,13 @@ define link2
 [RSMPGS2]\nName=RSMPGS2\nComment=RSMPGS SCADA simulator\nExec=mono /opt/RSMPGS2/RSMPGS2.exe\nType=Application\nTerminal=false\nIcon=\nNoDisplay=false
 endef
 
-RSMPGS:	RSMPGS1 RSMPGS2
+RSMPGS:	RSMPGS1.exe RSMPGS2.exe
 
-RSMPGS1: Makefile
+RSMPGS1.exe: Makefile
 	nuget restore RSMPGS1/RSMPGS1.sln
 	msbuild RSMPGS1/RSMPGS1.sln -p:Configuration=Release
 
-RSMPGS2: Makefile
+RSMPGS2.exe: Makefile
 	nuget restore RSMPGS2/RSMPGS2.sln
 	msbuild RSMPGS2/RSMPGS2.sln -p:Configuration=Release
 
